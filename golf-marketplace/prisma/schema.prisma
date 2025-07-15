@@ -1,0 +1,922 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  firstName     String?
+  lastName      String?
+  password      String?
+  image         String?
+  phone         String?
+  location      String?
+  bio           String?
+  verified      Boolean  @default(false)
+  pgaVerified   Boolean  @default(false)
+  emailVerified DateTime?
+  subscribeNewsletter Boolean @default(false)
+
+  // Subscription info
+  subscription        String   @default("free") // free, pro, business, pga-pro
+  subscriptionTier    String   @default("free")
+  subscriptionStatus  String?
+  trialEndDate        DateTime?
+  stripeCustomerId    String?
+  subscriptionId      String?
+  trialEndsAt         DateTime?
+  subscriptionEndsAt  DateTime?
+
+  // Profile stats
+  rating        Float?   @default(0)
+  reviewCount   Int      @default(0)
+  responseRate  Float?   @default(0)
+  memberSince   DateTime @default(now())
+
+  // Sales stats
+  totalSales    Int      @default(0)
+  totalRevenue  Float    @default(0)
+
+  // Stripe Connect for sellers
+  stripeAccountId String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  products      Product[]
+  orders        Order[]
+  sellerOrders  Order[]   @relation("SellerOrders")
+  sentMessages  Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  reviews       Review[]  @relation("ReviewAuthor")
+  receivedReviews Review[] @relation("ReviewTarget")
+  paymentTransactions PaymentTransaction[]
+  cartItems     CartItem[]
+  passwordResetTokens PasswordResetToken[]
+  userProfiles  UserProfile[]
+  subscriptions Subscription[]
+  activities    Activity[]
+  favorites     Favorite[]
+  wantedListings WantedListing[]
+  wantedResponses WantedResponse[] @relation("WantedResponses")
+
+  // PGA Professional advanced features
+  studentDiscounts StudentDiscount[] @relation("StudentDiscounts")
+  discountUsages DiscountUsage[] @relation("DiscountUsages")
+  studentVerification StudentVerification? @relation("StudentVerification")
+  lessonsGiven  LessonBooking[] @relation("LessonsGiven")
+  lessonsTaken  LessonStudent[] @relation("LessonsTaken")
+  businessBranding BusinessBranding? @relation("BusinessBranding")
+
+  // PGA Professional networking features
+  pgaProfile    PGAProfile? @relation("PGAProfile")
+  pgaConnectionsFrom PGAConnection[] @relation("PGAConnectionsFrom")
+  pgaConnectionsTo   PGAConnection[] @relation("PGAConnectionsTo")
+  pgaReferralsFrom   PGAReferral[] @relation("PGAReferralsFrom")
+  pgaReferralsTo     PGAReferral[] @relation("PGAReferralsTo")
+
+  // Transaction and sales relations
+  sellerTransactions Transaction[] @relation("SellerTransactions")
+  sellerSales       Sale[] @relation("SellerSales")
+  sellerPayouts     Payout[] @relation("SellerPayouts")
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
+
+model UserProfile {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio         String?
+  location    String?
+  phoneNumber String?
+  website     String?
+  preferences Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("user_profiles")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  icon        String?
+  image       String?
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  description   String
+  brand         String?
+  model         String?
+  condition     String   // new, excellent, very-good, good, fair
+  price         Float
+  originalPrice Float?
+  negotiable    Boolean  @default(false)
+
+  // Location and shipping
+  location      String?
+  shipping      Json?    // shipping options and costs
+  tags          Json?    // array of tags for search
+
+  // Product specifications (JSON field for flexibility)
+  specifications Json?
+
+  // Images (stored as JSON for SQLite compatibility)
+  images        Json?
+  primaryImage  String?
+
+  // Status and visibility
+  status        String   @default("active") // draft, active, sold, pending, deleted
+  featured      Boolean  @default(false)
+  authenticatedBy String?
+
+  // Stats
+  views         Int      @default(0)
+  viewCount     Int      @default(0)
+  watchers      Int      @default(0)
+  bumpCount     Int      @default(0)
+  lastBumpedAt  DateTime?
+
+  // Relations
+  sellerId      String
+  seller        User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  orderItems    OrderItem[]
+  messages      Message[]
+  reviews       Review[]
+  cartItems     CartItem[]
+  favorites     Favorite[]
+  proMarketplace ProMarketplace?
+
+  // Sales relations
+  transactions  Transaction[]
+  sales         Sale[]
+
+  @@map("products")
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  orderNumber   String   @unique
+  status        String   @default("pending") // pending, confirmed, shipped, delivered, cancelled
+
+  // Pricing
+  subtotal      Float
+  shippingFee   Float
+  platformFee   Float
+  total         Float
+
+  // Shipping info
+  shippingAddress Json
+  trackingNumber String?
+  shippingCarrier String?
+  estimatedDelivery DateTime?
+
+  // DELIVERY TRACKING FOR ESCROW
+  shippedAt     DateTime?
+  deliveredAt   DateTime?
+  deliveryConfirmed Boolean @default(false)
+  deliveryConfirmedAt DateTime?
+  deliveryConfirmedBy String? // buyer, carrier, auto
+
+  // Buyer communication
+  buyerNotified Boolean @default(false)
+  buyerNotifiedAt DateTime?
+  deliveryInstructions String?
+
+  // Payment info
+  paymentMethod String
+  paymentStatus String   @default("pending") // pending, paid, failed, refunded
+  stripePaymentIntentId String?
+  paypalOrderId String?
+
+  // ESCROW STATUS
+  holdStatus    String   @default("payment_held") // payment_held, shipped, delivered, confirmed, released
+  holdReleaseEligibleAt DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  buyerId       String
+  buyer         User     @relation(fields: [buyerId], references: [id])
+  sellerId      String
+  seller        User     @relation("SellerOrders", fields: [sellerId], references: [id])
+
+  orderItems    OrderItem[]
+  paymentTransactions PaymentTransaction[]
+  discountUsages DiscountUsage[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  quantity      Int
+  price         Float   // Price at time of purchase
+
+  createdAt     DateTime @default(now())
+
+  // Relations
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model CartItem {
+  id            String   @id @default(cuid())
+  quantity      Int      @default(1)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+model Message {
+  id            String   @id @default(cuid())
+  content       String
+  read          Boolean  @default(false)
+  messageType   String   @default("general") // general, offer, question, system
+
+  // For offers
+  offerAmount   Float?
+  offerStatus   String?  // pending, accepted, rejected, counter
+
+  createdAt     DateTime @default(now())
+
+  // Relations
+  senderId      String
+  sender        User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId    String
+  receiver      User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  rating        Int      // 1-5 stars
+  comment       String?
+  reviewType    String   // product, seller
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  authorId      String
+  author        User     @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  targetUserId  String?
+  targetUser    User?    @relation("ReviewTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+model PaymentTransaction {
+  id            String   @id @default(cuid())
+  type          String   // subscription, purchase, service, refund
+  amount        Float
+  currency      String   @default("gbp")
+  status        String   // pending, completed, failed, refunded
+
+  // Stripe info
+  stripePaymentIntentId String?
+  stripeSessionId String?
+
+  // Service info (for non-order payments)
+  serviceType   String?
+  serviceDetails Json?
+
+  createdAt     DateTime @default(now())
+
+  // Relations
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId       String?
+  order         Order?   @relation(fields: [orderId], references: [id])
+
+  @@map("payment_transactions")
+}
+
+model Subscription {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planType            String
+  status              String
+  pricePerMonth       Float
+  currency            String   @default("GBP")
+  trialStartDate      DateTime?
+  trialEndDate        DateTime?
+  stripeSubscriptionId String?
+  stripeCustomerId    String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("subscriptions")
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@map("activities")
+}
+
+model Transaction {
+  id                String   @id @default(cuid())
+  productId         String
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sellerId          String
+  seller            User     @relation("SellerTransactions", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyerEmail        String
+
+  // Financial details
+  amount            Float    // Total amount paid by buyer
+  commissionRate    Float    // Commission rate (0.01 to 0.05)
+  commissionAmount  Float    // Commission amount for ClubUp
+  sellerAmount      Float    // Amount seller receives
+
+  // Status tracking
+  status            String   @default("pending") // pending, completed, paid, failed, refunded
+
+  // Stripe integration
+  stripeSessionId   String?  @unique
+  stripePaymentIntentId String?
+  stripeTransferId  String?
+
+  // PayPal integration
+  paypalOrderId     String?
+  paypalPaymentId   String?
+
+  // ESCROW/HOLD SYSTEM
+  holdStatus        String   @default("payment_held") // payment_held, shipped, delivered, confirmed, release_requested, released, disputed
+  shippedAt         DateTime?
+  shippingTrackingNumber String?
+  shippingCarrier   String?
+  deliveredAt       DateTime?
+  deliveryConfirmedAt DateTime?
+  deliveryConfirmedBy String? // buyer_confirmed, auto_confirmed, seller_requested
+  releaseRequestedAt DateTime?
+  releasedAt        DateTime?
+  disputedAt        DateTime?
+  disputeReason     String?
+
+  // Timeouts for automatic release
+  confirmationDeadline DateTime? // 7 days after delivery
+  finalReleaseDeadline DateTime? // 8 days after delivery (1 day grace for seller request)
+
+  // Timestamps
+  createdAt         DateTime @default(now())
+  completedAt       DateTime?
+  paidAt            DateTime?
+  transferredAt     DateTime?
+  failedAt          DateTime?
+
+  metadata          Json?
+
+  // Relations
+  payout            Payout?
+  paymentHold       PaymentHold?
+
+  @@map("transactions")
+}
+
+model Sale {
+  id                String   @id @default(cuid())
+  sellerId          String
+  seller            User     @relation("SellerSales", fields: [sellerId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  buyerEmail        String
+
+  // Financial details
+  amount            Float    // Total sale amount
+  commissionAmount  Float    // Commission deducted
+  netAmount         Float    // Amount seller receives
+
+  // Status and tracking
+  status            String   @default("completed") // completed, refunded
+  stripeSessionId   String?
+
+  createdAt         DateTime @default(now())
+  refundedAt        DateTime?
+
+  metadata          Json?
+
+  @@map("sales")
+}
+
+model Payout {
+  id                String   @id @default(cuid())
+  sellerId          String
+  seller            User     @relation("SellerPayouts", fields: [sellerId], references: [id], onDelete: Cascade)
+  transactionId     String   @unique
+  transaction       Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  // Payout details
+  grossAmount       Float    // Original transaction amount
+  commissionAmount  Float    // ClubUp commission deducted
+  stripeFee         Float    // Stripe processing fee
+  netAmount         Float    // Final amount paid to seller
+
+  // Payout method and tracking
+  payoutMethod      String   @default("stripe") // stripe, paypal
+  status            String   @default("pending") // pending, processing, completed, failed, reversed
+
+  // Stripe Connect integration
+  stripeTransferId  String?  @unique
+  stripeAccountId   String?
+
+  // PayPal integration
+  paypalPayoutId    String?
+  paypalBatchId     String?
+
+  // Timestamps
+  initiatedAt       DateTime @default(now())
+  processedAt       DateTime?
+  completedAt       DateTime?
+  failedAt          DateTime?
+
+  // Error tracking
+  failureReason     String?
+  retryCount        Int      @default(0)
+  maxRetries        Int      @default(3)
+
+  metadata          Json?
+
+  @@map("payouts")
+}
+
+model PaymentHold {
+  id                String   @id @default(cuid())
+  transactionId     String   @unique
+  transaction       Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  // Hold details
+  heldAmount        Float    // Amount being held in escrow
+  currency          String   @default("GBP")
+
+  // Status tracking
+  status            String   @default("held") // held, released, disputed, refunded
+  reason            String   @default("awaiting_delivery") // awaiting_delivery, awaiting_confirmation, seller_requested, auto_release
+
+  // Timeline tracking
+  heldAt            DateTime @default(now())
+  releasedAt        DateTime?
+
+  // Delivery confirmation
+  deliveryConfirmationSent  Boolean @default(false)
+  deliveryConfirmationSentAt DateTime?
+  buyerNotificationsSent    Int     @default(0) // Track reminder count
+
+  // Seller release request
+  sellerReleaseRequested    Boolean @default(false)
+  sellerReleaseRequestedAt  DateTime?
+  sellerReleaseApproved     Boolean @default(false)
+  sellerReleaseApprovedAt   DateTime?
+
+  // Dispute handling
+  disputeRaised     Boolean @default(false)
+  disputeRaisedAt   DateTime?
+  disputeRaisedBy   String? // buyer, seller, admin
+  disputeReason     String?
+  disputeResolution String?
+  disputeResolvedAt DateTime?
+  disputeResolvedBy String?
+
+  // Auto-release protection
+  autoReleaseEligibleAt DateTime? // When auto-release becomes available
+  autoReleaseExecutedAt DateTime?
+
+  // Platform fees held
+  commissionHeld    Float
+  processingFeeHeld Float
+
+  // Admin notes
+  adminNotes        String?
+  reviewedBy        String?
+  reviewedAt        DateTime?
+
+  metadata          Json?
+
+  @@map("payment_holds")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@map("favorites")
+}
+
+model Analytics {
+  id            String   @id @default(cuid())
+  type          String   // product_view, search, category_view, user_action
+  entityType    String?  // product, category, user
+  entityId      String?
+  metadata      Json?
+
+  // User context
+  userId        String?
+  sessionId     String?
+  ipAddress     String?
+  userAgent     String?
+
+  createdAt     DateTime @default(now())
+
+  @@map("analytics")
+}
+
+model WantedListing {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String
+  brand       String?
+  condition   String?
+  budgetMin   Float?
+  budgetMax   Float?
+  location    String?
+  urgent      Boolean  @default(false)
+  status      String   @default("active") // active, fulfilled, expired, closed
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  responses   WantedResponse[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expiresAt   DateTime?
+
+  @@map("wanted_listings")
+}
+
+model WantedResponse {
+  id              String   @id @default(cuid())
+  message         String
+  offeredPrice    Float?
+  productImageUrl String?
+  contactInfo     String?
+
+  wantedListingId String
+  wantedListing   WantedListing @relation(fields: [wantedListingId], references: [id], onDelete: Cascade)
+
+  responderId     String
+  responder       User     @relation("WantedResponses", fields: [responderId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+
+  @@map("wanted_responses")
+}
+
+// PGA Professional Advanced Features
+
+model StudentDiscount {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  name            String
+  description     String?
+  discountType    String   // percentage, fixed_amount
+  discountValue   Float    // percentage (0-100) or fixed amount
+  minPurchase     Float?   // minimum purchase amount
+  maxDiscount     Float?   // maximum discount amount for percentage
+
+  // Usage limits
+  usageLimit      Int?     // max total uses
+  usageCount      Int      @default(0)
+  perStudentLimit Int?     // max uses per student
+
+  // Validity
+  validFrom       DateTime @default(now())
+  validUntil      DateTime?
+  isActive        Boolean  @default(true)
+
+  // Student verification requirements
+  requiresStudentVerification Boolean @default(true)
+  allowedInstitutions Json?  // array of allowed institutions
+
+  // PGA Pro who created this discount
+  pgaProId        String
+  pgaPro          User     @relation("StudentDiscounts", fields: [pgaProId], references: [id], onDelete: Cascade)
+
+  // Usage tracking
+  discountUsages  DiscountUsage[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("student_discounts")
+}
+
+model DiscountUsage {
+  id              String   @id @default(cuid())
+
+  discountId      String
+  discount        StudentDiscount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+
+  studentId       String
+  student         User     @relation("DiscountUsages", fields: [studentId], references: [id], onDelete: Cascade)
+
+  orderId         String?
+  order           Order?   @relation(fields: [orderId], references: [id])
+
+  discountAmount  Float    // actual discount applied
+  purchaseAmount  Float    // total purchase amount
+
+  usedAt          DateTime @default(now())
+
+  @@unique([discountId, orderId])
+  @@map("discount_usages")
+}
+
+model StudentVerification {
+  id              String   @id @default(cuid())
+
+  userId          String   @unique
+  user            User     @relation("StudentVerification", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Verification details
+  studentId       String
+  institution     String
+  courseOfStudy   String?
+  academicYear    String?
+  graduationDate  DateTime?
+
+  // Verification documents
+  documentUrl     String?
+  verificationStatus String @default("pending") // pending, verified, rejected
+
+  // Verified by PGA Pro
+  verifiedBy      String?
+  verifiedAt      DateTime?
+
+  // Expiry
+  expiresAt       DateTime
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("student_verifications")
+}
+
+model LessonBooking {
+  id              String   @id @default(cuid())
+
+  // Lesson details
+  title           String
+  description     String?
+  lessonType      String   // individual, group, clinic
+  duration        Int      // minutes
+  price           Float
+
+  // Scheduling
+  scheduledAt     DateTime
+  endTime         DateTime
+  timeZone        String   @default("Europe/London")
+
+  // Location
+  locationType    String   // online, indoor, outdoor, driving_range
+  location        String?  // address or online meeting link
+  maxStudents     Int      @default(1)
+
+  // Status
+  status          String   @default("scheduled") // scheduled, confirmed, cancelled, completed
+
+  // PGA Pro
+  pgaProId        String
+  pgaPro          User     @relation("LessonsGiven", fields: [pgaProId], references: [id], onDelete: Cascade)
+
+  // Students
+  students        LessonStudent[]
+
+  // Payment
+  totalAmount     Float
+  paymentStatus   String   @default("pending") // pending, paid, refunded
+  stripeSessionId String?
+
+  // Notes and feedback
+  proNotes        String?
+  studentFeedback String?
+  rating          Float?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("lesson_bookings")
+}
+
+model LessonStudent {
+  id              String   @id @default(cuid())
+
+  lessonId        String
+  lesson          LessonBooking @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  studentId       String
+  student         User     @relation("LessonsTaken", fields: [studentId], references: [id], onDelete: Cascade)
+
+  // Student-specific details
+  paidAmount      Float
+  discountApplied Float?   @default(0)
+  attended        Boolean  @default(false)
+  notes           String?
+
+  joinedAt        DateTime @default(now())
+
+  @@unique([lessonId, studentId])
+  @@map("lesson_students")
+}
+
+model ProMarketplace {
+  id              String   @id @default(cuid())
+
+  // Product details (extends regular product)
+  productId       String   @unique
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Pro-only features
+  isProExclusive  Boolean  @default(true)
+  earlyAccess     Boolean  @default(false) // early access before public
+  proPrice        Float?   // special price for pros
+
+  // Professional verification
+  requiresPGAVerification Boolean @default(true)
+
+  // Metadata
+  category        String?  // demo, new_release, professional_only
+  priority        Int      @default(0) // higher priority shows first
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("pro_marketplace")
+}
+
+model BusinessBranding {
+  id              String   @id @default(cuid())
+
+  userId          String   @unique
+  user            User     @relation("BusinessBranding", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Branding assets
+  logoUrl         String?
+  bannerUrl       String?
+  brandColors     Json?    // primary, secondary, accent colors
+
+  // Business info
+  businessName    String
+  tagline         String?
+  description     String?
+  website         String?
+
+  // Contact info
+  phone           String?
+  email           String?
+  address         Json?    // structured address
+
+  // Social media
+  socialLinks     Json?    // facebook, instagram, twitter, etc.
+
+  // Display preferences
+  showContactInfo Boolean  @default(true)
+  showSocialLinks Boolean  @default(true)
+  customDomain    String?  // for white-label storefront
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("business_branding")
+}
+
+model PGAProfile {
+  id                String   @id @default(cuid())
+
+  userId            String   @unique
+  user              User     @relation("PGAProfile", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Professional details
+  specializations   Json?    // golf specialties (array of strings)
+  yearsExperience   Int?
+  certifications    Json?    // additional certifications (array of strings)
+  bio               String?
+  availability      String?  // availability status
+
+  // Professional metrics
+  totalLessons      Int      @default(0)
+  totalStudents     Int      @default(0)
+  averageRating     Float?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("pga_profiles")
+}
+
+model PGAConnection {
+  id              String   @id @default(cuid())
+
+  fromUserId      String
+  fromUser        User     @relation("PGAConnectionsFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+
+  toUserId        String
+  toUser          User     @relation("PGAConnectionsTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  status          String   // pending, accepted, declined, blocked
+  message         String?  // optional connection message
+
+  connectedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([fromUserId, toUserId])
+  @@map("pga_connections")
+}
+
+model PGAReferral {
+  id              String   @id @default(cuid())
+
+  fromUserId      String
+  fromUser        User     @relation("PGAReferralsFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+
+  toUserId        String
+  toUser          User     @relation("PGAReferralsTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  // Client details
+  clientName      String
+  clientContact   String
+  referralMessage String?
+
+  status          String   @default("pending") // pending, accepted, successful, declined
+  outcome         String?  // notes about the referral outcome
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("pga_referrals")
+}

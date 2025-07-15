@@ -1,0 +1,644 @@
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Navigation } from "@/components/navigation"
+import {
+  Star,
+  CheckCircle,
+  ArrowRight,
+  TrendingUp,
+  Shield,
+  Users,
+  Zap,
+  Trophy,
+  MessageCircle,
+  Search,
+  Heart,
+  Camera,
+  Award,
+  Verified,
+  Crown,
+  Globe,
+  Mail
+} from "lucide-react"
+import Link from "next/link"
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-green-600 via-green-700 to-green-800 text-white py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <Badge className="mb-4 bg-yellow-500 text-yellow-900 hover:bg-yellow-400">
+              🏆 #1 Golf Equipment Marketplace
+            </Badge>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              Elevate Your <span className="text-yellow-300">Golf Game</span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-green-100 max-w-3xl mx-auto">
+              The premier marketplace for premium golf equipment. Buy, sell, and discover exceptional gear with 50,000+ active golfers.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/search">
+                <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100 px-8">
+                  <Search className="w-5 h-5 mr-2" />
+                  Browse Equipment
+                </Button>
+              </Link>
+              <Link href="/sell/new">
+                <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100 px-8">
+                  <Camera className="w-5 h-5 mr-2" />
+                  Sell Equipment
+                </Button>
+              </Link>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12 pt-8 border-t border-green-500/30">
+              <div className="text-center">
+                <div className="text-2xl font-bold">50K+</div>
+                <div className="text-green-200 text-sm">Active Members</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">25K+</div>
+                <div className="text-green-200 text-sm">Items Listed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">4.8★</div>
+                <div className="text-green-200 text-sm">User Rating</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">£2M+</div>
+                <div className="text-green-200 text-sm">In Sales</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Why Choose ClubUp?</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Join thousands of golfers buying and selling premium equipment with complete confidence
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Verified className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Authenticated Equipment</h3>
+                <p className="text-gray-600 mb-4">Professional authentication service ensures all premium equipment is genuine and accurately described.</p>
+                <Badge variant="outline" className="text-xs">£28+ Authentication</Badge>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Premium Community</h3>
+                <p className="text-gray-600 mb-4">Connect with PGA professionals, golf enthusiasts, and equipment experts in our exclusive community.</p>
+                <Badge variant="outline" className="text-xs">PGA Pro Verified</Badge>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-8 h-8 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Secure Transactions</h3>
+                <p className="text-gray-600 mb-4">Advanced payment protection, seller verification, and buyer guarantees ensure safe transactions.</p>
+                <Badge variant="outline" className="text-xs">Stripe Protected</Badge>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Subscription Plans */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Choose Your Membership</h2>
+            <p className="text-xl text-gray-600">
+              Start with a FREE trial • Cancel anytime
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {/* Free Plan */}
+            <Card>
+              <CardHeader className="text-center">
+                <CardTitle>Free</CardTitle>
+                <div className="text-3xl font-bold">£0</div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    5% commission
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Basic listings
+                  </li>
+                </ul>
+                <Button className="w-full mt-6" variant="outline">
+                  Get Started
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Pro Plan */}
+            <Card className="border-2 border-green-500">
+              <div className="bg-green-500 text-white text-center py-2 text-sm font-medium">
+                Most Popular
+              </div>
+              <CardHeader className="text-center">
+                <CardTitle>Pro</CardTitle>
+                <div className="text-3xl font-bold text-green-600">£7</div>
+                <div className="text-sm text-gray-500">/month</div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    3% commission
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Enhanced listings
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Priority support
+                  </li>
+                </ul>
+                <Button className="w-full mt-6">
+                  Start FREE Trial
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Business Plan */}
+            <Card>
+              <CardHeader className="text-center">
+                <CardTitle>Business</CardTitle>
+                <div className="text-3xl font-bold">£22</div>
+                <div className="text-sm text-gray-500">/month</div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    3% commission
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Premium storefront
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Business analytics
+                  </li>
+                </ul>
+                <Button className="w-full mt-6">
+                  Start FREE Trial
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* PGA Pro Plan */}
+            <Card className="border-2 border-yellow-500">
+              <div className="bg-yellow-500 text-white text-center py-2 text-sm font-medium">
+                PGA Professional
+              </div>
+              <CardHeader className="text-center">
+                <CardTitle>PGA Pro</CardTitle>
+                <div className="text-3xl font-bold text-yellow-600">£45</div>
+                <div className="text-sm text-gray-500">/month</div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    1% commission
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    PGA Pro badge
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Exclusive access
+                  </li>
+                </ul>
+                <Button className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600">
+                  Start 2-Month FREE Trial
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">What Our Members Say</h2>
+            <p className="text-xl text-gray-600">
+              Trusted by thousands of golfers worldwide
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex justify-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-600 mb-4">
+                  "Incredible platform! Sold my old driver and found the perfect replacement.
+                  The authentication service gave me complete confidence."
+                </p>
+                <div className="font-semibold">Sarah Johnson</div>
+                <div className="text-sm text-gray-500">PGA Pro Member</div>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex justify-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-600 mb-4">
+                  "The premium community is amazing. Connected with other golf enthusiasts
+                  and found some rare vintage clubs I'd been searching for."
+                </p>
+                <div className="font-semibold">Michael Chen</div>
+                <div className="text-sm text-gray-500">Business Member</div>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex justify-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-600 mb-4">
+                  "As a teaching professional, the PGA features are invaluable.
+                  Student discounts and lesson integration make my business so much easier."
+                </p>
+                <div className="font-semibold">David Wilson</div>
+                <div className="text-sm text-gray-500">PGA Teaching Professional</div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Advertising Platform */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Advertising Platform</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Reach 50,000+ active golfers with targeted advertising solutions
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Banner Advertising */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                  <Trophy className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Banner Advertising</h3>
+                <p className="text-gray-600 mb-4">
+                  Premium banner placements across homepage, search results, and product pages
+                </p>
+                <div className="text-2xl font-bold text-primary mb-2">£500-2,000</div>
+                <div className="text-sm text-gray-500 mb-4">/month</div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Homepage banner slots
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Search result placements
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Product page advertising
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Featured Listings */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                  <Star className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Featured Listings</h3>
+                <p className="text-gray-600 mb-4">
+                  Promote your products with enhanced visibility and premium placement
+                </p>
+                <div className="text-2xl font-bold text-primary mb-2">£6-52</div>
+                <div className="text-sm text-gray-500 mb-4">/week per listing</div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Top of search results
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Homepage feature slots
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Category page priority
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Newsletter Sponsorship */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                  <Mail className="w-6 h-6 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Newsletter Sponsorship</h3>
+                <p className="text-gray-600 mb-4">
+                  Exclusive sponsorship of our weekly newsletter reaching engaged golfers
+                </p>
+                <div className="text-2xl font-bold text-primary mb-2">£800</div>
+                <div className="text-sm text-gray-500 mb-4">/month</div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    50,000+ subscribers
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Exclusive weekly slot
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Performance analytics
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Category Sponsorship */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                  <Award className="w-6 h-6 text-orange-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Category Sponsorship</h3>
+                <p className="text-gray-600 mb-4">
+                  Become the official partner for specific equipment categories
+                </p>
+                <div className="text-2xl font-bold text-primary mb-2">£1,200</div>
+                <div className="text-sm text-gray-500 mb-4">/month</div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Category page branding
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Official partner status
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Enhanced visibility
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* PGA Professional Network */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
+                  <Crown className="w-6 h-6 text-yellow-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">PGA Pro Network</h3>
+                <p className="text-gray-600 mb-4">
+                  Target verified PGA Professionals with exclusive advertising opportunities
+                </p>
+                <div className="text-2xl font-bold text-primary mb-2">£1,500</div>
+                <div className="text-sm text-gray-500 mb-4">/month</div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    PGA dashboard ads
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Pro marketplace featured
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Educational content sponsor
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Custom Partnerships */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+                  <Zap className="w-6 h-6 text-red-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Custom Partnerships</h3>
+                <p className="text-gray-600 mb-4">
+                  Bespoke advertising solutions tailored to your brand and objectives
+                </p>
+                <div className="text-2xl font-bold text-primary mb-2">Custom</div>
+                <div className="text-sm text-gray-500 mb-4">Pricing</div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Dedicated account manager
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Custom creative solutions
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    Performance guarantees
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-12">
+            <h3 className="text-2xl font-bold mb-4">Ready to Reach Golf Enthusiasts?</h3>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              Join leading golf brands advertising on ClubUp. Get access to detailed analytics,
+              dedicated support, and proven results.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="px-8">
+                Get Media Kit
+              </Button>
+              <Button size="lg" variant="outline" className="px-8">
+                Contact Sales Team
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
+            <p className="text-xl text-gray-600 mb-8">
+              Get the latest equipment releases, exclusive deals, and golf tips delivered to your inbox
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+              />
+              <Button className="px-6 py-3">
+                <Mail className="w-4 h-4 mr-2" />
+                Subscribe
+              </Button>
+            </div>
+
+            <p className="text-sm text-gray-500 mt-4">
+              No spam, unsubscribe anytime. We respect your privacy.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-gradient-to-r from-green-600 to-green-700 text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">
+            Ready to Elevate Your Golf Game?
+          </h2>
+          <p className="text-xl mb-8 text-green-100 max-w-2xl mx-auto">
+            Join thousands of golfers buying and selling premium equipment. Start with a free trial and experience the ClubUp difference.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/search">
+              <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100 px-8">
+                <Search className="w-5 h-5 mr-2" />
+                Browse Equipment
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+            <Link href="/sell/new">
+              <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100 px-8">
+                <Camera className="w-5 h-5 mr-2" />
+                List Your Gear
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            {/* Company Info */}
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold">C</span>
+                </div>
+                <span className="text-xl font-bold">ClubUp</span>
+              </div>
+              <p className="text-gray-400 mb-4">
+                The premier marketplace for premium golf equipment. Connecting golfers worldwide.
+              </p>
+              <div className="flex space-x-4">
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                  <Globe className="w-5 h-5" />
+                </Button>
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                  <MessageCircle className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/search" className="hover:text-white">Browse Equipment</Link></li>
+                <li><Link href="/sell" className="hover:text-white">Sell Equipment</Link></li>
+                <li><Link href="/wanted" className="hover:text-white">Wanted Listings</Link></li>
+                <li><Link href="/services" className="hover:text-white">Services</Link></li>
+              </ul>
+            </div>
+
+            {/* Support */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Support</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/help" className="hover:text-white">Help Center</Link></li>
+                <li><Link href="/contact" className="hover:text-white">Contact Us</Link></li>
+                <li><Link href="/terms" className="hover:text-white">Terms of Service</Link></li>
+                <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+              </ul>
+            </div>
+
+            {/* Membership */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Membership</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/auth/signup" className="hover:text-white">Join ClubUp</Link></li>
+                <li><Link href="/subscription" className="hover:text-white">Upgrade Plan</Link></li>
+                <li><Link href="/pga" className="hover:text-white">PGA Professionals</Link></li>
+                <li><Link href="/business" className="hover:text-white">Business Accounts</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400">
+            <p>&copy; 2025 ClubUp. All rights reserved. The premier golf equipment marketplace.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}

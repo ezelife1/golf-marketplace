@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ClubUp Icon Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        canvas { border: 1px solid #ccc; margin: 10px; }
+        .icon-container { display: inline-block; margin: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>ClubUp PWA Icon Generator</h1>
+    <p>This generates placeholder icons for the PWA. In production, replace with professional designs.</p>
+
+    <div id="icons"></div>
+
+    <script>
+        // Icon sizes to generate
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+
+        function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = size;
+            canvas.height = size;
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#16a085');
+            gradient.addColorStop(1, '#138f7a');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Add border radius effect
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size * 0.2);
+            ctx.fill();
+
+            ctx.globalCompositeOperation = 'source-over';
+
+            // Golf club icon (simplified)
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.05;
+            ctx.lineCap = 'round';
+
+            // Club shaft
+            ctx.beginPath();
+            ctx.moveTo(size * 0.3, size * 0.2);
+            ctx.lineTo(size * 0.7, size * 0.8);
+            ctx.stroke();
+
+            // Club head
+            ctx.beginPath();
+            ctx.arc(size * 0.7, size * 0.8, size * 0.08, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.15}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('C', size * 0.5, size * 0.6);
+
+            return canvas;
+        }
+
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Generate all icons
+        const container = document.getElementById('icons');
+
+        sizes.forEach(size => {
+            const canvas = generateIcon(size);
+
+            const div = document.createElement('div');
+            div.className = 'icon-container';
+
+            const label = document.createElement('div');
+            label.textContent = `${size}x${size}`;
+
+            const button = document.createElement('button');
+            button.textContent = 'Download';
+            button.onclick = () => downloadCanvas(canvas, `icon-${size}x${size}.png`);
+
+            div.appendChild(label);
+            div.appendChild(canvas);
+            div.appendChild(button);
+
+            container.appendChild(div);
+        });
+
+        // Add download all button
+        const downloadAllBtn = document.createElement('button');
+        downloadAllBtn.textContent = 'Download All Icons';
+        downloadAllBtn.style.fontSize = '16px';
+        downloadAllBtn.style.padding = '10px 20px';
+        downloadAllBtn.style.marginTop = '20px';
+        downloadAllBtn.onclick = () => {
+            sizes.forEach((size, index) => {
+                setTimeout(() => {
+                    const canvas = generateIcon(size);
+                    downloadCanvas(canvas, `icon-${size}x${size}.png`);
+                }, index * 500); // Stagger downloads
+            });
+        };
+
+        document.body.appendChild(downloadAllBtn);
+    </script>
+</body>
+</html>
